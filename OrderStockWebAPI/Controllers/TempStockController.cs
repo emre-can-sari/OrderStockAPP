@@ -19,7 +19,7 @@ public class TempStockController : ControllerBase
     }
 
     [HttpGet("confirmed")]
-    [Authorize(Roles = EnumStringRoles.User)]
+    [Authorize(Roles = EnumStringRoles.Admin + "," + EnumStringRoles.User)]
     public ActionResult<List<TempStock>> GetConfirmedStock()
     {
         var stocks = _tempStockService.GetConfirmedStock();
@@ -27,14 +27,14 @@ public class TempStockController : ControllerBase
     }
 
     [HttpGet("waiting")]
-    [Authorize(Roles = EnumStringRoles.User)]
+    [Authorize(Roles = EnumStringRoles.Admin + "," + EnumStringRoles.User)]
     public ActionResult<List<TempStock>> GetWaitingStock()
     {
         var stocks = _tempStockService.GetWaitingStock();
         return Ok(stocks);
     }
     [HttpGet("{id}")]
-    [Authorize(Roles = EnumStringRoles.User)]
+    [Authorize(Roles = EnumStringRoles.Admin + "," + EnumStringRoles.User)]
     public ActionResult<TempStock> GetTempStockById(int id)
     {
         var tempStock = _tempStockService.GetTempStockById(id);

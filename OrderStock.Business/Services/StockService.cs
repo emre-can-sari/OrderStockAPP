@@ -28,16 +28,26 @@ public class StockService
         return _context.Stocks.SingleOrDefault(x=> x.Id == id);
     }
 
-    public Stock AddStock(StockDTO stockDto) {
-        Stock stock = new Stock
+    public IEnumerable<Stock> AddStocks(IEnumerable<StockDTO> stockDtos)
+    {
+        var stocks = new List<Stock>();
+
+        foreach (var stockDto in stockDtos)
         {
-            Name = stockDto.Name,
-            Quantity = stockDto.Quantity
-        };
-        _context.Stocks.Add(stock);
+            var stock = new Stock
+            {
+                Name = stockDto.Name,
+                Quantity = stockDto.Quantity
+            };
+            stocks.Add(stock);
+        }
+
+        _context.Stocks.AddRange(stocks);
         _context.SaveChanges();
-        return stock;
+
+        return stocks; 
     }
+
 
     public Stock UpdateStockQuantity(int id, StockDTO stockDto) { 
        var updatedStock = _context.Stocks.SingleOrDefault(x=> x.Id == id);

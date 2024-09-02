@@ -17,7 +17,7 @@ namespace OrderStock.DataAccess.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.8");
 
-            modelBuilder.Entity("OrderStock.Entities.Entities.Stock", b =>
+            modelBuilder.Entity("OrderStock.Entities.Entities.AddedStock", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -36,6 +36,24 @@ namespace OrderStock.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("TempStockId");
+
+                    b.ToTable("AddedStocks");
+                });
+
+            modelBuilder.Entity("OrderStock.Entities.Entities.Stock", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
 
                     b.ToTable("Stocks");
                 });
@@ -88,16 +106,16 @@ namespace OrderStock.DataAccess.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("OrderStock.Entities.Entities.Stock", b =>
+            modelBuilder.Entity("OrderStock.Entities.Entities.AddedStock", b =>
                 {
                     b.HasOne("OrderStock.Entities.Entities.TempStock", null)
-                        .WithMany("Stocks")
+                        .WithMany("AddedStocks")
                         .HasForeignKey("TempStockId");
                 });
 
             modelBuilder.Entity("OrderStock.Entities.Entities.TempStock", b =>
                 {
-                    b.Navigation("Stocks");
+                    b.Navigation("AddedStocks");
                 });
 #pragma warning restore 612, 618
         }

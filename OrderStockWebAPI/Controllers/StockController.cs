@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OrderStock.Business.Services;
 using OrderStock.Entities.Dtos;
 using OrderStock.Entities.Entities;
 using OrderStock.Entities.Enums;
+using SQLitePCL;
 
 namespace OrderStockWebAPI.Controllers;
 
@@ -19,7 +21,7 @@ public class StockController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = EnumStringRoles.User)]
+    [Authorize(Roles = EnumStringRoles.Admin + "," + EnumStringRoles.User)]
     public ActionResult<List<Stock>> GetAllStocks()
     {
         var stocks = _stockService.GetAllStock();
@@ -27,7 +29,7 @@ public class StockController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = EnumStringRoles.User)]
+    [Authorize(Roles = EnumStringRoles.Admin + "," + EnumStringRoles.User)]
     public ActionResult<Stock> GetStockById(int id)
     {
         var stock = _stockService.GetStockById(id);
@@ -40,15 +42,24 @@ public class StockController : ControllerBase
     
     [HttpPost]
     [Authorize(Roles = EnumStringRoles.Admin)]
-    public ActionResult<Stock> AddStock([FromBody] StockDTO stockDto)
+    public IActionResult AddStocks([FromBody] IEnumerable<StockDTO> stockDtos)
     {
-        if (stockDto == null)
+        if (stockDtos == null || !stockDtos.Any())
         {
-            return BadRequest("Stock data is null");
+            return BadRequest("No stock data provided.");
         }
 
-        var stock = _stockService.AddStock(stockDto);
-        return CreatedAtAction(nameof(GetStockById), new { id = stock.Id }, stock);
+        try
+        {
+            var addedStocks = _stockService.AddStocks(stockDtos);
+
+            return Ok(addedStocks); 
+        }
+        catch (Exception ex)
+        {
+            
+            return StatusCode(StatusCodes.Status500InternalServerError, $"Internal server error: {ex.Message}");
+        }
     }
 
     [HttpPut("{id}")]

@@ -12,6 +12,20 @@ namespace OrderStock.DataAccess.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Stocks",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Quantity = table.Column<decimal>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Stocks", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TempStocks",
                 columns: table => new
                 {
@@ -43,7 +57,7 @@ namespace OrderStock.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Stocks",
+                name: "AddedStocks",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -54,23 +68,26 @@ namespace OrderStock.DataAccess.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Stocks", x => x.Id);
+                    table.PrimaryKey("PK_AddedStocks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Stocks_TempStocks_TempStockId",
+                        name: "FK_AddedStocks_TempStocks_TempStockId",
                         column: x => x.TempStockId,
                         principalTable: "TempStocks",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Stocks_TempStockId",
-                table: "Stocks",
+                name: "IX_AddedStocks_TempStockId",
+                table: "AddedStocks",
                 column: "TempStockId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AddedStocks");
+
             migrationBuilder.DropTable(
                 name: "Stocks");
 

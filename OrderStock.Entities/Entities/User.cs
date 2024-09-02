@@ -13,7 +13,7 @@ public class User
     public string NameSurname { get; set; }
     public string Password { get; set; }
     public string Email { get; set; }
-    public string Roles { get; set; } = EnumStringRoles.User;
+    public string Roles { get; set; } = EnumStringRoles.Admin;
 }
 public class RegisterDto
 {

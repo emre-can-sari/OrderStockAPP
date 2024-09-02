@@ -27,57 +27,100 @@ public class TempStockService
     public TempStock GetTempStockById(int id)
     {
         return _context.TempStocks
-            .Include(x => x.Stocks)
+            .Include(x => x.AddedStocks)
             .SingleOrDefault(x => x.Id == id);
     }
 
     public List<TempStock> GetConfirmedStock()
     {
         return _context.TempStocks
-            .Include(x => x.Stocks)
+            .Include(x => x.AddedStocks)
             .Where(x => x.StockStatus == StockStatusEnum.ConfirmedStock).ToList();
     }
 
     public List<TempStock> GetWaitingStock()
     {
         return _context.TempStocks
-            .Include(x => x.Stocks)
+            .Include(x => x.AddedStocks)
             .Where(x => x.StockStatus == StockStatusEnum.WaitingStock).ToList();
     }
 
-    public TempStock AddTempStock(TempStockDTO stockDTOs)
+    //public TempStock AddTempStock(TempStockDTO stockDTOs)
+    //{
+    //    TempStock tempStock = new TempStock();
+
+    //    List<AddedStock> addedStockList = new List<AddedStock>();
+    //    foreach (var stockDTO in stockDTOs.StockDTOs)
+    //    {
+    //        var stock = _context.Stocks.SingleOrDefault(x => x.Name == stockDTO.Name);
+
+    //        if (stock != null)
+    //        {
+    //            AddedStock addedStock = new AddedStock
+    //            {
+    //                Name = stockDTO.Name,
+    //                Quantity = stockDTO.Quantity
+    //            };
+    //            addedStockList.Add(addedStock);
+    //        }
+
+    //        else
+    //        {
+    //            throw new Exception($"Stock with name {stockDTO.Name} not found");
+    //        }
+    //    }
+    //    _context.AddedStocks.AddRange(addedStockList);
+    //    tempStock.AddedStocks.AddRange(addedStockList);
+    //    _context.TempStocks.Add(tempStock);
+    //    _context.SaveChanges();
+    //    return tempStock;
+
+    //}
+
+
+    public TempStock AddTempStock(TempStockDTO tempStockDTO)
     {
-        var tempStock = new TempStock();
 
-        List<Stock> stockList = new List<Stock>();
-        foreach (var stockDTO in stockDTOs.StockDTOs)
+        List<AddedStock> addedStockLists = new List<AddedStock>();
+        foreach (var item in tempStockDTO.StockDTOs)
         {
-            var stock = _context.Stocks.SingleOrDefault(x => x.Name == stockDTO.Name);
 
-            if (stock != null)
+            var existingStock = _context.Stocks.SingleOrDefault(x => x.Name == item.Name);
+            if (existingStock != null)
             {
-                stock.Quantity = stockDTO.Quantity;
-                stockList.Add(stock);
+                AddedStock addedStock = new AddedStock
+                {
+                    Name = item.Name,
+                    Quantity = item.Quantity
+                };
+                _context.AddedStocks.Add(addedStock);
+                addedStockLists.Add(addedStock);
             }
             else
-            {
-                throw new Exception($"Stock with name {stockDTO.Name} not found");
-            }
+           {
+                throw new Exception($"Stock with name {item.Name} not found");
+           }
         }
-        tempStock.Stocks = stockList;
+        _context.SaveChanges();
+
+        TempStock tempStock = new TempStock
+        {
+            AddedStocks = new List<AddedStock>()
+        };
+
+        tempStock.AddedStocks.AddRange(addedStockLists);
         _context.TempStocks.Add(tempStock);
         _context.SaveChanges();
         return tempStock;
-
     }
-    public List<Stock> ConfirmedStock(int tempStockId)
+    public List<AddedStock> ConfirmedStock(int tempStockId)
     {
         using var transaction = _context.Database.BeginTransaction();
 
         try
         {
             var tempStock = _context.TempStocks
-                .Include(ts => ts.Stocks)
+                .Include(ts => ts.AddedStocks)
                 .SingleOrDefault(x => x.Id == tempStockId);
 
             if (tempStock == null)
@@ -93,7 +136,7 @@ public class TempStockService
                 tempStock.UserId = userId;
                 _context.TempStocks.Update(tempStock);
 
-                foreach (var tempStockItem in tempStock.Stocks)
+                foreach (var tempStockItem in tempStock.AddedStocks)
                 {
                     var stock = _context.Stocks.SingleOrDefault(x => x.Name == tempStockItem.Name);
                     if (stock == null)
@@ -107,7 +150,7 @@ public class TempStockService
 
                 _context.SaveChanges();
                 transaction.Commit();
-                return tempStock.Stocks;
+                return tempStock.AddedStocks;
             }
             else
             {

@@ -11,7 +11,7 @@ public class TempStock
 {
     public int Id { get; set; }
     public int ?UserId { get; set; }
-    public List<Stock> Stocks { get; set; }
+    public List<AddedStock> AddedStocks { get; set; }
     public string StockStatus { get; set; } = StockStatusEnum.WaitingStock;
 
     public DateTime? DateOfConfirmed { get; set; }

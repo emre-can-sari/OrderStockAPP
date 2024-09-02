@@ -17,5 +17,6 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<User> Users { get; set; }
     public DbSet<Stock> Stocks { get; set; }
+    public DbSet<AddedStock> AddedStocks { get; set; }
     public DbSet<TempStock> TempStocks { get; set; }
 }
