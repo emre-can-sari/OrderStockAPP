@@ -46,8 +46,7 @@ public class TempStockController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize(Roles = EnumStringRoles.Admin)]
-    public ActionResult<TempStock> AddTempStock([FromBody] TempStockDTO tempStockDTO)
+    public ActionResult<TempStock> AddTempStock([FromBody] List<StockDTO> tempStockDTO)
     {
         if (tempStockDTO == null)
         {

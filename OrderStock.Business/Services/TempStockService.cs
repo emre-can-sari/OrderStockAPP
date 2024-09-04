@@ -45,44 +45,11 @@ public class TempStockService
             .Where(x => x.StockStatus == StockStatusEnum.WaitingStock).ToList();
     }
 
-    //public TempStock AddTempStock(TempStockDTO stockDTOs)
-    //{
-    //    TempStock tempStock = new TempStock();
-
-    //    List<AddedStock> addedStockList = new List<AddedStock>();
-    //    foreach (var stockDTO in stockDTOs.StockDTOs)
-    //    {
-    //        var stock = _context.Stocks.SingleOrDefault(x => x.Name == stockDTO.Name);
-
-    //        if (stock != null)
-    //        {
-    //            AddedStock addedStock = new AddedStock
-    //            {
-    //                Name = stockDTO.Name,
-    //                Quantity = stockDTO.Quantity
-    //            };
-    //            addedStockList.Add(addedStock);
-    //        }
-
-    //        else
-    //        {
-    //            throw new Exception($"Stock with name {stockDTO.Name} not found");
-    //        }
-    //    }
-    //    _context.AddedStocks.AddRange(addedStockList);
-    //    tempStock.AddedStocks.AddRange(addedStockList);
-    //    _context.TempStocks.Add(tempStock);
-    //    _context.SaveChanges();
-    //    return tempStock;
-
-    //}
-
-
-    public TempStock AddTempStock(TempStockDTO tempStockDTO)
+    public TempStock AddTempStock(List<StockDTO> tempStockDTO)
     {
 
         List<AddedStock> addedStockLists = new List<AddedStock>();
-        foreach (var item in tempStockDTO.StockDTOs)
+        foreach (var item in tempStockDTO)
         {
 
             var existingStock = _context.Stocks.SingleOrDefault(x => x.Name == item.Name);
@@ -97,9 +64,9 @@ public class TempStockService
                 addedStockLists.Add(addedStock);
             }
             else
-           {
+            {
                 throw new Exception($"Stock with name {item.Name} not found");
-           }
+            }
         }
         _context.SaveChanges();
 
